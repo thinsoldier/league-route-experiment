@@ -54,7 +54,14 @@ $route->group('/orders', function ($route) {
 	$route->map('POST', '/{cmd:update}/{id:number}', 'AcmeController::processRequest');
 	$route->map('GET' , '/{cmd:archives}', 'AcmeController::processRequest');
 	$route->map('GET' , '/{cmd:archives}/{page:number}', 'AcmeController::processRequest');
+})
+->middleware(function (ServerRequestInterface $request, ResponseInterface $response, callable $next) {
+	$response->getBody()->write('This will run before your controller.<hr>');
+	$response = $next($request, $response);
+	$response->getBody()->write('<hr>This will run after your controller.');
+	return $response;
 });
+;
 
 try {
 	$response = $route->dispatch($request, $response);
