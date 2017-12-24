@@ -3,6 +3,8 @@ require 'vendor/autoload.php';
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
+session_start();
+
 //-----------------------------
 class AcmeController
 {
@@ -15,6 +17,7 @@ class AcmeController
 		//var_dump($request->getRequestTarget());
 		//var_dump( get_class_methods($request) );
 		var_dump($args);
+		//var_dump( get_class_methods($response) );
 		
 		if( !isset($args['cmd'] )){ echo '<b>orders index</b>'; }
 		
@@ -41,10 +44,29 @@ $emitter = new Zend\Diactoros\Response\SapiEmitter;
 $route = new League\Route\RouteCollection();
 
 $route->map('GET', '/', function (ServerRequestInterface $request, ResponseInterface $response) {
-    $response->getBody()->write('<h1>Hello, World!</h1>');
+    $response->getBody()->write('<h1>Hello, World!</h1>'.print_r($_SESSION,1));
 
     return $response;
 });
+
+$route->map('GET', '/login', function (ServerRequestInterface $request, ResponseInterface $response) {
+    $_SESSION['authorized'] = true;
+    $response->getBody()->write('<h1>You are logged in.</h1>');
+    return $response;
+});
+
+$route->map('GET', '/logout', function (ServerRequestInterface $request, ResponseInterface $response) {
+    $_SESSION = array();
+    $response->getBody()->write('<h1>You are logged out.</h1>');
+    return $response;
+});
+
+
+$route->map('GET', '/accessdenied', function (ServerRequestInterface $request, ResponseInterface $response) {
+    $response->getBody()->write('<h1>Access Denied</h1>');
+    return $response;
+});
+
 
 $route->group('/orders', function ($route) {
 	$route->map('GET' , '/', 'AcmeController::processRequest');
@@ -56,9 +78,12 @@ $route->group('/orders', function ($route) {
 	$route->map('GET' , '/{cmd:archives}/{page:number}', 'AcmeController::processRequest');
 })
 ->middleware(function (ServerRequestInterface $request, ResponseInterface $response, callable $next) {
+	// http://route.thephpleague.com/middleware/
 	$response->getBody()->write('This will run before your controller.<hr>');
+	if( ! $_SESSION['authorized'] ){
+		header("Location: /accessdenied"); exit; }
 	$response = $next($request, $response);
-	$response->getBody()->write('<hr>This will run after your controller.');
+	//$response->getBody()->write('<hr>This will run after your controller.');
 	return $response;
 });
 ;
