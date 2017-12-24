@@ -17,7 +17,17 @@ $route->map('GET', '/', function (ServerRequestInterface $request, ResponseInter
     return $response;
 });
 
-$response = $route->dispatch($request, $response);
+try {
+	$response = $route->dispatch($request, $response);
+}
+catch(League\Route\Http\Exception\NotFoundException $exception)
+{
+	// Show 404 page with proper 404 http status header.
+	//https://github.com/zendframework/zend-diactoros/blob/master/doc/book/custom-responses.md#html-responses
+	$htmlContent = '<h1>404 - Page Not Found!</h1>'; // Replace with actual template.
+	$response = new Zend\Diactoros\Response\HtmlResponse($htmlContent, 404);
+}
+
 
 //exit; 
 /*
