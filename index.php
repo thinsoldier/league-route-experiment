@@ -16,6 +16,8 @@ class AcmeController
 		//var_dump( get_class_methods($request) );
 		var_dump($args);
 		
+		if( !isset($args['cmd'] )){ echo '<b>orders index</b>'; }
+		
 		$response->getBody()->write( ob_get_clean() );
 		
 		// Route callables must return an instance of (Psr\Http\Message\ResponseInterface)
@@ -44,13 +46,8 @@ $route->map('GET', '/', function (ServerRequestInterface $request, ResponseInter
     return $response;
 });
 
-$route->map('GET', '/orders', function (ServerRequestInterface $request, ResponseInterface $response) {
-    $response->getBody()->write('<h1>Orders Index</h1>');
-    return $response;
-});
-
-
 $route->group('/orders', function ($route) {
+	$route->map('GET' , '/', 'AcmeController::processRequest');
 	$route->map('GET' , '/{cmd:new}', 'AcmeController::processRequest');
 	$route->map('POST', '/{cmd:create}', 'AcmeController::processRequest');
 	$route->map('GET' , '/{cmd:edit}/{id:number}', 'AcmeController::processRequest');
