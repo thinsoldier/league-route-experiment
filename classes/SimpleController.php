@@ -67,11 +67,12 @@ public $templates = array('start'=>'_templates/tpl.index.php',
 	* Figures out $cmd var from GET and POST. Sets $cmd to 'start' if none found.
 	* Must be run (or cmd set some other way) before calling ::run()
 	*/
-	function processRequest()
+	function processRequest( $params=null )
 	{
+		if( !$params ){ $params = $_REQUEST; }
 		// get current action from URL or form
-		$this->cmd = ( isset($_REQUEST['cmd']) ) ? $_REQUEST['cmd'] : 'start';
-		$this->id = ( isset($_REQUEST['id']) ) ? (int)$_REQUEST['id'] : null;
+		$this->cmd = ( isset($params['cmd']) ) ? $params['cmd'] : 'start';
+		$this->id = ( isset($params['id']) ) ? (int)$params['id'] : null;
 	}
 
 /**
