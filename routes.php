@@ -30,17 +30,18 @@ $route->map('GET', '/accessdenied', function (ServerRequestInterface $request, R
 
 
 $route->group('/orders', function ($route) {
-	$route->map('GET' , '/', 'AcmeController::processRequest');
-	$route->map('GET' , '/{cmd:new}', 'AcmeController::processRequest');
-	$route->map('POST', '/{cmd:create}', 'AcmeController::processRequest');
-	$route->map('GET' , '/{cmd:edit}/{id:number}', 'AcmeController::processRequest');
-	$route->map('POST', '/{cmd:update}/{id:number}', 'AcmeController::processRequest');
-	$route->map('GET' , '/{cmd:archives}', 'AcmeController::processRequest');
-	$route->map('GET' , '/{cmd:archives}/{page:number}', 'AcmeController::processRequest');
+	$class_method = 'AcmeController::respondToRoute';
+	$route->map('GET' , '/', $class_method);
+	$route->map('GET' , '/{cmd:new}', $class_method);
+	$route->map('POST', '/{cmd:create}', $class_method);
+	$route->map('GET' , '/{cmd:edit}/{id:number}', $class_method);
+	$route->map('POST', '/{cmd:update}/{id:number}', $class_method);
+	$route->map('GET' , '/{cmd:archives}', $class_method);
+	$route->map('GET' , '/{cmd:archives}/{page:number}', $class_method);
 })
 ->middleware(function (ServerRequestInterface $request, ResponseInterface $response, callable $next) {
 	// http://route.thephpleague.com/middleware/
-	$response->getBody()->write('This will run before your controller.<hr>');
+	//$response->getBody()->write('This will run before your controller.<hr>');
 	if( ! $_SESSION['authorized'] ){
 		header("Location: /accessdenied"); exit; }
 	$response = $next($request, $response);

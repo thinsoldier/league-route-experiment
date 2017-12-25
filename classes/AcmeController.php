@@ -1,22 +1,46 @@
 <?php
-class AcmeController
+class AcmeController extends SimpleController
 {
-	function processRequest( $request, $response, $args )
+	function respondToRoute( $request, $response, $args )
 	{
+		$this->processRequest( $args );
+
 		ob_start();
 		
-		echo __method__;
-		echo __file__;
-		//var_dump($request->getRequestTarget());
-		//var_dump( get_class_methods($request) );
-		var_dump($args);
-		//var_dump( get_class_methods($response) );
-		
-		if( !isset($args['cmd'] )){ echo '<b>orders index</b>'; }
+		$this->run();
 		
 		$response->getBody()->write( ob_get_clean() );
 		
 		// Route callables must return an instance of (Psr\Http\Message\ResponseInterface)
 		return $response;
-	} 
+	}
+	
+	function nav()
+	{
+		return '
+		<a href="/">home</a>
+		<a href="/orders">orders</a>
+		<a href="/orders/new">new order</a>
+		<a href="/orders/edit/4321">edit order</a>
+		<a href="/logout">logout</a>
+		';
+	}
+	
+	function start_Action()
+	{
+		echo $this->nav();
+		echo '<h1>Start - Index View</h1>';
+	}
+	
+	function edit_Action()
+	{
+		echo $this->nav();
+		echo '<h1>Edit Form</h1>';
+	}
+	
+	function new_Action()
+	{
+		echo $this->nav();
+		echo '<h1>New Form</h1>';
+	}
 }
