@@ -3,8 +3,6 @@ require 'vendor/autoload.php';
 
 session_start();
 
-require 'AcmeController.php';
-
 /**
 * See documentation of ServerRequest at:
 * https://github.com/php-fig/http-message/blob/master/src/ServerRequestInterface.php
