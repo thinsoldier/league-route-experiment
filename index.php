@@ -44,8 +44,18 @@ $emitter = new Zend\Diactoros\Response\SapiEmitter;
 $route = new League\Route\RouteCollection();
 
 $route->map('GET', '/', function (ServerRequestInterface $request, ResponseInterface $response) {
-    $response->getBody()->write('<h1>Hello, World!</h1>'.print_r($_SESSION,1));
+	// response emitter won't interfere with showing fatal errors.
+	#echo foo(); 
+	// But it will interfere with warnings and notices unless they are
+	// captured in output buffer and included in the response body
+	// or you exit before the emitter->emit() function is run // ! //
+	#echo foo; 
 
+	ob_start();
+	echo foobar;
+	echo '<h1>Hello, World!</h1>'.print_r($_SESSION,1);
+	$content = ob_get_clean();
+	$response->getBody()->write( $content );
     return $response;
 });
 
@@ -100,7 +110,7 @@ catch(League\Route\Http\Exception\NotFoundException $exception)
 }
 
 
-//exit; 
+// exit; // ! //
 /*
 Cannot see xdebug error messages if the emitter::emit method runs
 Disable the next line (or exit before it) and look for error messages
